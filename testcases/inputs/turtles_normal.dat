@@ -1,0 +1,25 @@
+paper 3 10
+new normal tris     0 0
+new normal will     1 0
+new normal alastair 2 0
+pen tris ♠
+pen will ♣
+pen alastair ♦
+pen tris down
+pen will down
+pen alastair down
+move tris 20
+move will 8
+move alastair 6
+show
+right will 90
+move will 3
+right tris 90
+move tris 3
+pen tris up
+right tris 90
+move tris 2
+pen tris down
+move tris 2
+
+show

@@ -1,0 +1,30 @@
+new normal tris 0 0
+pen tris down
+show
+pen tris └
+move tris 1
+pen tris │
+move tris 8
+show
+right tris 90
+pen tris ╒
+move tris 1
+pen tris ═
+move tris 8
+show
+right tris 90
+pen tris ╕
+move tris 1
+pen tris ┊
+move tris 8
+show
+right tris 90
+pen tris ╯
+move tris 1
+pen tris ╾
+move tris 1
+pen tris ╍
+move tris 6
+pen tris ╼
+move tris 1
+show
