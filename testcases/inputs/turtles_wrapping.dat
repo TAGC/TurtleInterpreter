@@ -1,0 +1,9 @@
+paper 60 10
+new wrapping tris 1 0
+pen tris down
+pen tris ↖
+left tris 45
+move tris 59
+pen tris ⇱
+move tris 1
+show
