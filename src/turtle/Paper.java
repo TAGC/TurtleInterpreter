@@ -28,6 +28,7 @@ public class Paper {
 		return height;
 	}
 	
+	//checks the given position is within the paper
 	public boolean checkWithinBounds(Position p) {
 		boolean withinbounds;
 		withinbounds = 0 <= p.getX() && p.getX() < getWidth()
@@ -36,13 +37,15 @@ public class Paper {
 		return withinbounds;
 	}
 	
+	//marks a given position on the paper with the specified character
 	public void markSpot(Position p, char c) {
 		if (checkWithinBounds(p)) {
 			markings[p.getX()][p.getY()] = c;
 		}
 	}
 	
-	public String toString(boolean borders) {
+	//displays the paper, either with or without borders
+	public String show(boolean borders) {
 		String stringrep, topborder, bottomborder;
 		
 		
@@ -56,8 +59,8 @@ public class Paper {
 		}
 		
 		if (borders) {
-			stringrep += topborder;
-		}
+			stringrep += topborder + "\n";
+		} 
 		
 		for(int y=0; y < getHeight(); y++) {
 			if (borders) {

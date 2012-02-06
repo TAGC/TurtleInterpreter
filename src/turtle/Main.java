@@ -1,17 +1,14 @@
 package turtle;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import turtle.util.Direction;
-import turtle.util.Position;
+import turtle.util.*;
+import turtle.implementations.*;
 
 public class Main {
 	
@@ -24,13 +21,14 @@ public class Main {
 	private static String outputlocation;
 	private static String[] commandlist;
 	private static PrintStream output;
+	private static String[] turtletypes;
 	
     public static void main(String[] args) throws FileNotFoundException {
     	String command;
     	String[] commands;
     	int currentcommand, totalcommands;
     	
-    	
+    	turtletypes = new String[]{"normal", "continuous", "bouncy", "reflecting", "wrapping"};
     	commandlist =new String[]{"paper", "new", "pen", "move", "right", "left", "show"};
     	paper = new Paper(10, 10);
     	input = new Scanner(System.in);
@@ -57,14 +55,11 @@ public class Main {
     	currentcommand = 0;
     	while ((filein && currentcommand < totalcommands) || !filein) {
     		if (filein) {
-    			System.out.println("COUNT: " + currentcommand);
     			currentcommandline = commands[currentcommand].split(" ");
-    			System.out.println(Arrays.toString(currentcommandline));
     			command = currentcommandline[0];
     			processCommand(command);
     			currentcommand++;
     			
-    			System.out.println(paper.toString(false));
     		} else {
 	    		System.out.println("Please enter a command: ");
 	        	System.out.println("- Paper\n- New\n- Pen\n- Move\n- Right\n- Left\n- Show\n");
@@ -75,6 +70,7 @@ public class Main {
     	}
     }
     
+    //reads data from the file and splits into separate commands
     public static String[] readFromFile(String filepath) {
     	File file;
     	String[] splitfiledata;
@@ -102,7 +98,6 @@ public class Main {
     			}
     		}
     		splitfiledata = filedata.split("\n");
-    		System.out.println("FIXED DATA: " + Arrays.toString(splitfiledata));
     		return splitfiledata;
     		
     	} catch (Exception e) {
@@ -110,27 +105,6 @@ public class Main {
     	}
     	
     	return null;
-    }
-    
-    public static void pause(long t) {
-    	try {
-    		Thread.sleep(t);
-    	} catch (Exception e) {
-    		
-    	};
-    }
-    
-    public static void writeToFile(String data, String outputlocation) {
-    	PrintStream out;
-    	
-    	try {
-    		out = new PrintStream(new File(outputlocation));
-    		out.print(data);
-    	} catch (Exception e) {
-    		System.out.println("ERROR: " + e);
-    	}
-    	
-    	return;
     }
     
     public static boolean contains(String[] xs, String x) {
@@ -143,16 +117,36 @@ public class Main {
     	return false;
     }
     
+    public static Turtle createTurtle(String type, Position pos) {
+    	Turtle turtle;
+    	
+    	if (type.equals("normal")) {
+    		turtle = new NormalTurtle(pos, Direction.NORTH, type, false, paper, '*');
+    	} else if (type.equals("continuous")) {
+    		turtle = new ContinuousTurtle(pos, Direction.NORTH, type, false, paper, '*');
+    	} else if (type.equals("bouncy")) {
+    		turtle = new BouncyTurtle(pos, Direction.NORTH, type, false, paper, '*');
+    	} else if (type.equals("reflecting")) {
+    		turtle = new ReflectingTurtle(pos, Direction.NORTH, type, false, paper, '*');
+    	} else if (type.equals("wrapping")) {
+    		turtle = new WrappingTurtle(pos, Direction.NORTH, type, false, paper, '*');
+    	} else {
+    		turtle = null;
+    	}  	
+    	
+    	return turtle;
+    }
+    
     public static void processCommand(String command) {
     	int paperwidth, paperheight, x, y, distance, rotation;
     	Turtle turtle;
     	String type, name, penstate;
-    	System.out.println("COMMAND: " + command);
     	if (command.equals("paper")) {
     		if (filein) {
     			paperwidth = Integer.parseInt(currentcommandline[1]);
     			paperheight = Integer.parseInt(currentcommandline[2]);
     			paper = new Paper(paperwidth, paperheight);
+    			
     		} else {
 	    		System.out.println("Please enter paper width");
 	    		paperwidth = input.nextInt();
@@ -163,8 +157,9 @@ public class Main {
 	    		paper = new Paper(paperwidth, paperheight);
 	    		turtlemap.clear();
 	    		
-	    		System.out.printf("Paper created with width %s and height %s\n",
+	    		System.out.printf("Paper created with width %s and height %s",
 	    						   paper.getWidth(), paper.getHeight());
+	    		System.out.println();
     		}
     		return;
     	}
@@ -175,18 +170,17 @@ public class Main {
     			name = currentcommandline[2];
     			x = Integer.parseInt(currentcommandline[3]);
     			y = paper.getHeight() - Integer.parseInt(currentcommandline[4]) - 1;
-    			turtle = new Turtle(new Position(x, y), Direction.NORTH, type, 
-			            false, paper, '*');
+    			turtle = createTurtle(type, new Position(x, y));
     			turtlemap.put(name.toLowerCase(), turtle);
     			
-    			System.out.printf("%s created at (%s, %s)\n",
-				          name,
-				          paper.getHeight() - 1 -
-				          turtle.getPosition().getX(), 
-				          turtle.getPosition().getY());
-    			
     		} else {
-	    		type = "normal";
+    			System.out.println("Please enter the turtle's type");
+	    		type = input.next().toLowerCase();
+	    		
+	    		if (!contains(turtletypes, type)) {
+	    			System.out.println("Invalid turtle type given");
+	    			return;
+	    		}
 	    		
 	    		System.out.println("Please enter the turtle's name");
 	    		name = input.next();
@@ -202,15 +196,15 @@ public class Main {
 	    			return;
 	    		}
 	    		
-	    		turtle = new Turtle(new Position(x, y), Direction.NORTH, type, 
-	    				            false, paper, '*');
+	    		turtle = createTurtle(type, new Position(x, y));
 	    		turtlemap.put(name.toLowerCase(), turtle);
 	    		
 	    		System.out.printf("%s created at (%s, %s)\n",
 	    				          name,
+	    				          turtle.getPosition().getX(),
 	    				          paper.getHeight() - 1 -
-						          turtle.getPosition().getX(), 
-						          turtle.getPosition().getY());
+						          turtle.getPosition().getY() 
+						          );
     		}
     		return;
     	}
@@ -225,9 +219,9 @@ public class Main {
         		} else if (penstate.equals("up")) {
         			turtle.setPenUp();
         		} else {
-        			System.out.println(penstate.charAt(0));
         			turtle.setChar(penstate.charAt(0));
         		}
+    			
     		} else {
 	    		System.out.println("Please enter the name of the turtle");
 	    		name = input.next();
@@ -236,17 +230,13 @@ public class Main {
 	    			System.out.println("That turtle does not exist");
 	    			return;
 	    		}
+	    		System.out.printf("Please enter 'down' to set the pen down, 'up' to set the pen up or enter " +
+	    				          "a character to set %s's brush character\n", name);
 	    		
-	    		System.out.printf("Please enter 'down' to set the pen down, " +
-	    				           "'up' to set the pen up or enter a character " +
-	    				           "to set %s's brush character\n",     				
-	    				           name);
 	    		penstate = input.next();
-	    		
-	    		
-	    		if (penstate.equals("down")) {
+	    		if (penstate.toLowerCase().equals("down")) {
 	    			turtle.setPenDown();
-	    		} else if (penstate.equals("up")) {
+	    		} else if (penstate.toLowerCase().equals("up")) {
 	    			turtle.setPenUp();
 	    		} else {
 	    			turtle.setChar(penstate.charAt(0));
@@ -266,6 +256,7 @@ public class Main {
     			turtle = turtlemap.get(name.toLowerCase());
     			distance = Integer.parseInt(currentcommandline[2]);
     			turtle.move(distance);
+    			
     		} else {
 	    		System.out.println("Please enter the name of the turtle");
 	    		name = input.next();
@@ -275,8 +266,7 @@ public class Main {
 	    			return;
 	    		}
 	    		
-	    		System.out.println("Please enter the distance you'd " +
-	    				           "like to move " + name);
+	    		System.out.println("Please enter the distance you'd like to move " + name);
 	    		
 	    		distance = input.nextInt();
 	    		
@@ -291,6 +281,7 @@ public class Main {
     			turtle = turtlemap.get(name.toLowerCase());
     			rotation = Integer.parseInt(currentcommandline[2]);
     			turtle.rotate(rotation % 360);
+    			
     		} else {
 	    		System.out.println("Please enter the name of the turtle");
 	    		name = input.next();
@@ -300,15 +291,13 @@ public class Main {
 	    			return;
 	    		}
 	    		
-	    		System.out.printf("Please enter the number of degrees to " +
-	    				          "rotate %s right\n", name);
+	    		System.out.printf("Please enter the number of degrees to rotate %s right\n", name);
 	    		
 	    		rotation = input.nextInt();
 	    		turtle.rotate(rotation % 360);
 	    		
 	    		System.out.printf("%s rotated clockwise - now orientated %s\n",
-				                  name, 
-				                  turtle.getDirection().name().toLowerCase());
+				                  name, turtle.getDirection().name().toLowerCase());
 	    		return;
     		}
     	}
@@ -319,6 +308,7 @@ public class Main {
     			turtle = turtlemap.get(name.toLowerCase());
     			rotation = Integer.parseInt(currentcommandline[2]);
     			turtle.rotate(360 - (rotation % 360));
+    			
     		} else {
 	    		System.out.println("Please enter the name of the turtle");
 	    		name = input.next();
@@ -328,30 +318,28 @@ public class Main {
 	    			return;
 	    		}
 	    		
-	    		System.out.printf("Please enter the number of degrees to " +
-	    				          "rotate %s left\n", name);
+	    		System.out.printf("Please enter the number of degrees to " + "rotate %s left\n", name);
 	    		
 	    		rotation = input.nextInt();
 	    		turtle.rotate(360 - (rotation % 360));
 	    		
-	    		System.out.printf("%s rotated anticlockwise - now orientated %s\n",
-		                  name, 
-		                  turtle.getDirection().name().toLowerCase());
+	    		System.out.printf("%s rotated anticlockwise - now orientated %s\n", name, 
+	    				          turtle.getDirection().name().toLowerCase());
 	    		return;
     		}
     	}
     	
     	else if (command.equals("show")) {
     		if (fileout) {
-    			output.println(paper.toString(false));
+    			output.println(paper.show(false));
     		} else {
-    			output.println(paper.toString(true));
+    			output.println(paper.show(true));
     		}
     		return;
     	}
     	
     	else {
-    		System.out.println("Invalid command given: >" + command + "<");
+    		System.out.println("Invalid command given: " + command);
     		return;
     	}
     }

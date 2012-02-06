@@ -2,12 +2,11 @@ package turtle;
 
 import turtle.util.*;
 
-public class Turtle {
+public abstract class Turtle {
 	
 	private boolean pendown;
 	private Position position;
 	private Direction direction;
-	private String type;
 	private Paper residingpaper;
 	private char brushchar;
 		
@@ -16,7 +15,6 @@ public class Turtle {
 		
 		this.position = position;
 		this.direction = direction;
-		this.type = type;
 		this.pendown = pendown;
 		this.residingpaper = paper;
 		this.brushchar = brushchar;
@@ -26,8 +24,16 @@ public class Turtle {
 		return position;
 	}
 	
+	public void setPosition(Position p) {
+		position = p;
+	}
+	
 	public Direction getDirection() {
 		return direction;
+	}
+	
+	public void setDirection(Direction d) {
+		direction = d;
 	}
 	
 	public Paper getResidingPaper() {
@@ -59,24 +65,39 @@ public class Turtle {
 	}
 	
 	public void move(int steps) {
-		Position newposition;
 		
 		for(int i=0; i < steps; i++) {
-			newposition = getDirection().move(getPosition());
-			if (!getResidingPaper().checkWithinBounds(newposition)) {
-				if (isPenDown()) {
-					residingpaper.markSpot(getPosition(), getBrushChar());
-				}
-				System.out.println("NOT WITHIN BOUNDS: " + newposition.toString());
-				break;
-			}
 			
 			//mark old spot before moving to the new spot if pen is down
 			if (isPenDown()) {
-				System.out.println("MARKING SPOT AT " + getPosition().toString() + " WITH " + getBrushChar());
 				residingpaper.markSpot(getPosition(), getBrushChar());
 			}
-			position = newposition;
+			if (borderHandler()) {
+				setPosition(getDirection().move(getPosition()));
+			}
 		}
 	}
+	
+	//returns true iff the turtle is adjacent to the ceiling, floor or left or right walls
+	//and is directed towards the wall
+	public boolean byWall() {
+		int x, y, xmax, ymax, xtranslate, ytranslate;
+		boolean condition;
+		
+		x = getPosition().getX();
+		y = getPosition().getY();
+		xmax = getResidingPaper().getWidth()-1;
+		ymax = getResidingPaper().getHeight()-1;
+		xtranslate = getDirection().getXTranslation();
+		ytranslate = getDirection().getYTranslation();
+		
+		condition = x == 0    && xtranslate == -1
+		         || x == xmax && xtranslate ==  1
+		         || y == 0    && ytranslate == -1
+		         || y == ymax && ytranslate ==  1;
+		
+		return condition;		
+	}
+	
+	public abstract boolean borderHandler();
 }

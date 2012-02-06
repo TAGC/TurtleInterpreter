@@ -1,5 +1,7 @@
 package turtle.util;
 
+import turtle.Paper;
+
 public enum Direction {
 	NORTH          (0, -1), 
 	NORTH_EAST     (1, -1), 
@@ -34,8 +36,8 @@ public enum Direction {
 		Position newposition;
 		int newx, newy;
 		
-		newx = position.getX() + getXTranslation();
-		newy = position.getY() + getYTranslation();
+		newx        = position.getX() + getXTranslation();
+		newy        = position.getY() + getYTranslation();
 		newposition = new Position(newx, newy);
 		return newposition;
 	}
@@ -45,7 +47,50 @@ public enum Direction {
 		int directionswitches;
 		
 		directionswitches = degrees / 45;
-		newdirection = Direction.values()[(this.ordinal() + directionswitches) % enumlength];
+		newdirection      = Direction.values()[(this.ordinal() + directionswitches) % enumlength];
 		return newdirection;		
+	}
+	
+	public Direction bounce() {
+		Direction newdirection;
+		newdirection = this.rotate(180);
+		return newdirection;
+	}
+	
+	public Direction reflect(Position pos, Paper paper) {
+		int xtranslate, ytranslate, dx, dy;
+		boolean sides, floor_or_ceil;
+		
+		sides = false;
+		floor_or_ceil = false;
+		if (pos.getX() == 0 || pos.getX() == paper.getWidth()-1) {
+			sides = true;
+		}
+		if (pos.getY() == 0 || pos.getY() == paper.getHeight()-1) {
+			floor_or_ceil = true;
+		}
+		
+		xtranslate = this.getXTranslation();
+		ytranslate = this.getYTranslation();
+		
+		if (sides) {
+			//side walls
+			xtranslate *= -1;
+		}
+		
+		if (floor_or_ceil) {
+			//top or bottom walls
+			ytranslate *= -1;
+		}
+		
+		for(Direction d : Direction.values()) {
+			dx = d.getXTranslation();
+			dy = d.getYTranslation();
+			if(xtranslate == dx && ytranslate == dy) {
+				return d;
+			}
+		}
+		
+		return null;
 	}
 }
