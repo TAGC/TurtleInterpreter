@@ -1,0 +1,15 @@
+paper 10 10
+new bouncy tris 0 9
+new bouncy tony 0 0
+right tony 225
+pen tris ⚪
+pen tony ⚫
+pen tris down
+pen tony down
+move tris 10
+show
+move tony 10
+show
+right tris 90
+move tris 10
+show

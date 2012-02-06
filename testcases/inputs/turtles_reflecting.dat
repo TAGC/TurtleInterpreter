@@ -1,0 +1,34 @@
+paper 15 5
+new reflecting francis 1 0
+left francis 45
+pen francis down
+pen francis ⇖
+move francis 2
+pen francis ⇗
+move francis 3
+pen francis ⇘
+move francis 5
+pen francis ⇗
+move francis 5
+pen francis ⇘
+move francis 2
+pen francis ⇙
+move francis 3
+
+left francis 45
+pen francis ⇐
+move francis 10
+show
+paper 15 10
+new reflecting mario 7 9
+right mario 180
+pen mario ⇓
+pen mario down
+move mario 9
+left mario 90
+move mario 1
+left mario 90
+pen mario ⇑
+move mario 10
+show
+

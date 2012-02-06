@@ -1,0 +1,19 @@
+paper 2 2
+new continuous cate 0 0
+pen cate ☑
+pen cate down
+move cate 3
+right cate 90
+move cate 3
+right cate 90
+move cate 3
+right cate 90
+move cate 3
+show
+pen cate ☒
+pen cate up
+right cate 135
+move cate 1
+pen cate down
+move cate 1
+show
